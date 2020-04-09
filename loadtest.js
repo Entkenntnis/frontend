@@ -15,7 +15,7 @@ function runSingleFetch() {
 
 // run times
 
-let number = 200
+let number = 100
 let currentSecond = undefined
 
 function run() {
