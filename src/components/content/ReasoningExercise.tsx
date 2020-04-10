@@ -6,21 +6,12 @@ import {
   faCheckCircle,
   faTimes,
   faTimesCircle,
-  faEllipsisH
+  faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons'
 import Modal from '../Modal'
 import React from 'react'
 import { theme } from '../../theme'
-
-const positiveAppraisals = [
-  'Gut gemacht!',
-  'Super.',
-  'Richtig!',
-  'Das hast du gut gemacht!',
-  'Toll!',
-  '100%',
-  'Weiter so!'
-]
+import HSpace from './HSpace'
 
 function getNextUp(data, words) {
   let entry = undefined
@@ -92,7 +83,7 @@ export default function ReasoningExercise(props) {
         return faTimesCircle
       }
       if (entry.type === 'hint') {
-        return faEllipsisH
+        return faExclamationCircle
       }
     }
   }
@@ -114,18 +105,10 @@ export default function ReasoningExercise(props) {
   function getMessage() {
     if (entry) {
       if (entry.type === 'success') {
-        return positiveAppraisals[
-          Math.floor(Math.random() * positiveAppraisals.length)
-        ]
+        return ''
       }
       if (entry.type === 'hint') {
-        return (
-          <>
-            Antwort ist unvollständig:
-            <br />
-            {entry.message}
-          </>
-        )
+        return <>{entry.message}</>
       }
       if (entry.message) {
         return entry.message
@@ -161,12 +144,25 @@ export default function ReasoningExercise(props) {
             {words.map(word => (
               <Word key={word}>{word}</Word>
             ))}
-            {active && <Cursor />}
+            {active && (!entry || !isDone || entry.type !== 'success') && (
+              <Cursor />
+            )}
             {active && words.length === 0 && <Word>&nbsp;</Word>}
           </AnswerField>
+          {isDone && entry && entry.type === 'success' && (
+            <>
+              <ResultIcon color={getColor()}>
+                <FontAwesomeIcon icon={getIcon()} size="1x" />
+              </ResultIcon>
+              <ContinueButton onClick={() => onExit('success')}>
+                Weiter
+              </ContinueButton>
+              <HSpace amount={40} />
+            </>
+          )}
         </DisplayContainer>
       </ViewArea>
-      {active && (
+      {active && (!isDone || !entry || entry.type !== 'success') && (
         <InputArea>
           <WordsArea>
             {nextup.map(word => (
@@ -194,6 +190,12 @@ export default function ReasoningExercise(props) {
               onClick={() => {
                 if (done) {
                   setDone(true)
+                  setTimeout(() => {
+                    const view = viewArea.current
+                    if (view) {
+                      view.scrollTop = view.scrollHeight
+                    }
+                  })
                 }
               }}
             >
@@ -204,6 +206,12 @@ export default function ReasoningExercise(props) {
                 if (words.length > 0) {
                   const wordsNew = words.slice(0, -1)
                   setWords(wordsNew)
+                  setTimeout(() => {
+                    const view = viewArea.current
+                    if (view) {
+                      view.scrollTop = view.scrollHeight
+                    }
+                  })
                 }
               }}
             >
@@ -212,30 +220,42 @@ export default function ReasoningExercise(props) {
           </ActionsArea>
         </InputArea>
       )}
-      <Modal isOpen={isDone}>
-        <Results>
-          <AnswerField>
-            {words.map(word => (
-              <Word key={word}>{word}</Word>
-            ))}
-          </AnswerField>
-          <ResultIcon color={getColor()}>
-            <FontAwesomeIcon icon={getIcon()} size="1x" />
-          </ResultIcon>
-          <ResultMessage>{getMessage()}</ResultMessage>
-          <ContinueButton
-            onClick={() => {
-              if (entry.type === 'success') {
-                return onExit('success')
-              } else {
-                setDone(false)
-              }
-            }}
-          >
-            Schließen
-          </ContinueButton>
-        </Results>
-      </Modal>
+      {entry && entry.type !== 'success' && (
+        <StyledModal isOpen={isDone} onRequestClose={() => setDone(false)}>
+          <Results>
+            {entry && entry.type === 'success' && (
+              <>
+                <ResultIcon color={getColor()}>
+                  <FontAwesomeIcon icon={getIcon()} size="1x" />
+                </ResultIcon>
+                <AnswerField>
+                  {words.map(word => (
+                    <Word key={word}>{word}</Word>
+                  ))}
+                </AnswerField>
+              </>
+            )}
+
+            {entry && (entry.type === 'fail' || entry.type === 'hint') && (
+              <ResultIcon color={getColor()}>
+                <FontAwesomeIcon icon={getIcon()} size="1x" />
+              </ResultIcon>
+            )}
+            <ResultMessage>{getMessage()}</ResultMessage>
+            <ContinueButton
+              onClick={() => {
+                if (entry.type === 'success') {
+                  return onExit('success')
+                } else {
+                  setDone(false)
+                }
+              }}
+            >
+              Schließen
+            </ContinueButton>
+          </Results>
+        </StyledModal>
+      )}
     </PageContainer>
   )
 }
@@ -298,7 +318,7 @@ const WordsArea = styled.div`
   max-height: 140px;
   min-height: 140px;
   overflow: auto;
-  justify-content: flex-end;
+  justify-content: space-around;
   @media (min-width: 600px) {
     justify-content: center;
   }
@@ -439,6 +459,7 @@ const Results = styled.div`
   max-width: 550px;
   margin-left: auto;
   margin-right: auto;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -449,22 +470,58 @@ const Results = styled.div`
 
 const ResultIcon = styled.div<{ color: string }>`
   text-align: center;
-  width: 100%;
   font-size: 2rem;
   padding: 25px;
   color: ${props => props.color};
 `
 
 const ResultMessage = styled.p`
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 60px;
+  padding: 10px 0;
+  text-align: left;
+  font-size: 1.125rem;
+  margin-top: 0;
+  margin-bottom: 24px;
+  width: 100%;
 `
 
 const ContinueButton = styled.div`
-  background-color: #a8b8ff;
-  font-size: 1.5rem;
+  border: 1px solid ${props => props.theme.colors.brand};
+  color: ${props => props.theme.colors.brand};
+  &:active,
+  &:hover {
+    background-color: ${props => props.theme.colors.brand};
+    color: white;
+  }
+  font-size: 1.125rem;
   padding: 0.4rem;
   border-radius: 0.4rem;
   cursor: pointer;
+  transition: all 0.25s;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100px;
+  text-align: center;
+`
+
+const StyledModal = styled(Modal)`
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  border: 1px solid ${props => props.theme.colors.lightgray};
+  background: white;
+  overflow: auto;
+  border-radius: 4px;
+  outline: none;
+  padding: 20px;
+  @media (max-width: 550px) {
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    padding: 8px;
+  }
+
+  animation: ${fadein} 0.3s;
 `

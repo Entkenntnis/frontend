@@ -5,8 +5,14 @@ import React from 'react'
 import ReasoningExercise, {
   calcGuessSuccessRate
 } from '../src/components/content/ReasoningExercise'
+import StyledH1 from '../src/components/tags/StyledH1'
+import StyledH2 from '../src/components/tags/StyledH2'
+import StyledP from '../src/components/tags/StyledP'
+import HSpace from '../src/components/content/HSpace'
+import StyledH3 from '../src/components/tags/StyledH3'
+import { renderArticle } from '../src/schema/articleRenderer'
 
-const exerciseDef = {
+const l1_1 = {
   statement: [
     {
       type: 'p',
@@ -14,8 +20,7 @@ const exerciseDef = {
     },
     {
       type: 'img',
-      src:
-        'https://access.openupresources.org/curricula/our6-8math/embeds/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBdlFnIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--fa0d52766bb3ee29475cb1c9ca40a3a4d251ce6a/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBZzZGRzF6WDIxaGRHaGZaR2xuYVhSaGJBPT0iLCJleHAiOm51bGwsInB1ciI6InZhcmlhdGlvbiJ9fQ==--62a1211df0b9edd27e75fe813b1b6e447cac9e4e/6.1.A1.Image.2-4.png',
+      src: '/openup/6.1.A1.Image.2-4.png',
       maxWidth: 400,
       children: [{ text: '' }]
     }
@@ -88,46 +93,140 @@ const exerciseDef = {
 
 console.log(
   'Guess success rate: ',
-  Math.round(calcGuessSuccessRate(exerciseDef, []) * 1000) / 10 + '%'
+  Math.round(calcGuessSuccessRate(l1_1, []) * 1000) / 10 + '%'
 )
 
 export default function Reasoning() {
-  const [active, setActive] = React.useState(false)
-  if (active) {
-    return (
-      <ReasoningExercise
-        data={exerciseDef}
-        onExit={() => {
-          setActive(false)
-        }}
-      />
-    )
-  }
+  const [active, setActive] = React.useState(undefined)
 
   return (
-    <Container>
-      <Button
-        onClick={() => {
-          setActive(true)
-        }}
-      >
-        <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Start
-      </Button>
-    </Container>
+    <>
+      {active && (
+        <Overlay>
+          <ReasoningExercise
+            data={active}
+            onExit={() => {
+              setActive(undefined)
+            }}
+          />
+        </Overlay>
+      )}
+      <Container>
+        <MaxWidth>
+          <HSpace amount={50} />
+          <StyledH1>Flächeninhalt und Oberflächeninhalt</StyledH1>
+          <StyledH2>Lektion 1: Parkettierung</StyledH2>
+          <StyledP>
+            Schauen wir uns Parkettierungen an und lasst uns über über
+            Flächeninhalt nachdenken.
+          </StyledP>
+          <StyledH3>1.1) Parkettmuster</StyledH3>
+          <StyledP>
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Start
+            </Button>
+          </StyledP>
+          <StyledH3>1.2) Mehr Rot, Grün oder Blau?</StyledH3>
+          <StyledP>
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Start
+            </Button>
+          </StyledP>
+          {renderArticle([
+            {
+              type: 'spoiler-container',
+              children: [
+                {
+                  type: 'spoiler-title',
+                  children: [{ text: 'Weitergedacht' }]
+                },
+                {
+                  type: 'spoiler-body',
+                  children: [
+                    {
+                      type: 'p',
+                      children: [{ text: 'Lalala' }]
+                    }
+                  ]
+                }
+              ]
+            }
+          ] as any)}
+          <StyledH3>Zusammenfassung</StyledH3>
+          <StyledP>
+            In this lesson, we learned about tiling the plane, which means
+            covering a two-dimensional region with copies of the same shape or
+            shapes such that there are no gaps or overlaps.
+          </StyledP>
+          <StyledH3>Übungsaufgaben</StyledH3>
+          <StyledP>
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Übung 1
+            </Button>{' '}
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Übung 2
+            </Button>{' '}
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Übung 3
+            </Button>{' '}
+            <Button
+              onClick={() => {
+                setActive(l1_1)
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Übung 4
+            </Button>
+          </StyledP>
+        </MaxWidth>
+      </Container>
+    </>
   )
 }
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
+`
 
 const Container = styled.div`
   display: flex;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 `
 
-const Button = styled.div`
+const MaxWidth = styled.div`
+  max-width: 700px;
+`
+
+const Button = styled.span`
   border-radius: 0.75rem;
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   border: 1px solid ${props => props.theme.colors.brand};
   cursor: pointer;
   padding: 6px 11px;
@@ -139,4 +238,6 @@ const Button = styled.div`
     color: white;
   }
   transition: all 0.6s;
+  display: inline-block;
+  margin-bottom: 5px;
 `
