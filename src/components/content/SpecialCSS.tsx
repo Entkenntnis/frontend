@@ -19,7 +19,8 @@ const SpecialCSS = styled.div`
     th,
     td {
       p:last-child,
-      [class|='MathWrapper'] {
+      [class|='MathWrapper'],
+      ul:last-child {
         margin-bottom: 0;
       }
     }

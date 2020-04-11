@@ -62,10 +62,17 @@ export function calcGuessSuccessRate(data, words) {
 
 export default function ReasoningExercise(props) {
   const { data, onExit } = props
-  const [words, setWords] = React.useState([])
+  const [words, setWords] = React.useState(props.words || [])
   const [isDone, setDone] = React.useState(false)
-  const [active, setActive] = React.useState(false)
+  const [active, setActive] = React.useState(words.length > 0)
   const viewArea = React.useRef<HTMLDivElement>()
+
+  React.useEffect(() => {
+    console.log(
+      'Guess success rate: ',
+      Math.round(calcGuessSuccessRate(data, []) * 1000) / 10 + '%'
+    )
+  }, [data])
 
   const { entry, nextup } = getNextUp(data, words)
   const done = !!entry
@@ -121,7 +128,7 @@ export default function ReasoningExercise(props) {
       <ViewArea ref={viewArea}>
         <ExitIcon
           onClick={() => {
-            onExit('abort')
+            onExit('abort', words)
           }}
         >
           <FontAwesomeIcon size="1x" icon={faTimes} />
@@ -141,9 +148,11 @@ export default function ReasoningExercise(props) {
             }}
           >
             {!active && <Word>Schreibe deine Antwort ...</Word>}
-            {words.map(word => (
-              <Word key={word}>{word}</Word>
-            ))}
+            {words.map((word, i) =>
+              word
+                .split('_')
+                .map(w => <Word key={word + '-' + i + w}>{w}</Word>)
+            )}
             {active && (!entry || !isDone || entry.type !== 'success') && (
               <Cursor />
             )}
@@ -180,7 +189,7 @@ export default function ReasoningExercise(props) {
                   })
                 }}
               >
-                {word}
+                {word.split('_').join(' ')}
               </WordSelect>
             ))}
           </WordsArea>
@@ -223,19 +232,6 @@ export default function ReasoningExercise(props) {
       {entry && entry.type !== 'success' && (
         <StyledModal isOpen={isDone} onRequestClose={() => setDone(false)}>
           <Results>
-            {entry && entry.type === 'success' && (
-              <>
-                <ResultIcon color={getColor()}>
-                  <FontAwesomeIcon icon={getIcon()} size="1x" />
-                </ResultIcon>
-                <AnswerField>
-                  {words.map(word => (
-                    <Word key={word}>{word}</Word>
-                  ))}
-                </AnswerField>
-              </>
-            )}
-
             {entry && (entry.type === 'fail' || entry.type === 'hint') && (
               <ResultIcon color={getColor()}>
                 <FontAwesomeIcon icon={getIcon()} size="1x" />
@@ -244,11 +240,7 @@ export default function ReasoningExercise(props) {
             <ResultMessage>{getMessage()}</ResultMessage>
             <ContinueButton
               onClick={() => {
-                if (entry.type === 'success') {
-                  return onExit('success')
-                } else {
-                  setDone(false)
-                }
+                setDone(false)
               }}
             >
               Schließen
