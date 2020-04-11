@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faPlayCircle,
   faExpand,
-  faCheckCircle
+  faCheckCircle,
+  faSpinner,
+  faUndo
 } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import ReasoningExercise from '../src/components/content/ReasoningExercise'
@@ -40,6 +42,8 @@ function setPage(index) {
   storage.page = index
   localStorage.setItem(localStorageItemKey, JSON.stringify(storage))
 }
+
+const LessonContext = React.createContext<any>({})
 
 export default function Reasoning() {
   const [active, setActive] = React.useState(undefined)
@@ -79,35 +83,42 @@ export default function Reasoning() {
             ))}
           </StyledP>
           <SpecialCSS>
-            <Lesson setActive={setActive} />
+            <LessonContext.Provider value={{ setActive }}>
+              <Lesson setActive={setActive} />
+            </LessonContext.Provider>
           </SpecialCSS>
           <HSpace amount={60} />
           <StyledP
             style={{
-              cursor: 'pointer',
               textAlign: 'right'
             }}
-            onClick={() => {
-              launchIntoFullscreen(document.documentElement)
-            }}
-          >
-            <FontAwesomeIcon size="1x" icon={faExpand} /> Vollbild
-          </StyledP>
-          <StyledP
-            style={{
-              cursor: 'pointer',
-              textAlign: 'right'
-            }}
-            onClick={() => {
-              if (window.confirm('Fortschritt löschen?')) {
-                localStorage.removeItem(localStorageItemKey)
-                storage.done = []
-                storage.words = []
-                setV(v + 1)
-              }
-            }}
-          >
-            Fortschritt löschen
+          ></StyledP>
+          <StyledP>
+            <span
+              onClick={() => {
+                launchIntoFullscreen(document.documentElement)
+              }}
+              style={{
+                cursor: 'pointer'
+              }}
+            >
+              <FontAwesomeIcon size="1x" icon={faExpand} /> Vollbild
+            </span>
+            <span>&nbsp;&nbsp;&nbsp;</span>
+            <span
+              onClick={() => {
+                if (window.confirm('Fortschritt zurücksetzen?')) {
+                  localStorage.removeItem(localStorageItemKey)
+                  storage.done = []
+                  storage.words = []
+                  setV(v + 1)
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+            >
+              <FontAwesomeIcon size="sm" icon={faUndo} /> Fortschritt
+              zurücksetzen
+            </span>
           </StyledP>
           <p style={{ margin: '16px' }}>
             <small>
@@ -206,6 +217,37 @@ const LessonButton = styled(Button)<{ active: boolean }>`
       ? `background-color: ${props.theme.colors.brand};color: white;`
       : ''}
 `
+
+function Task({ data, text = 'Start' }) {
+  const { setActive } = React.useContext(LessonContext)
+  return (
+    <StyledP>
+      <Button onClick={() => setActive(data)}>
+        <FontAwesomeIcon size="1x" icon={faPlayCircle} /> {text}
+      </Button>
+      {storage.done[data.id] && (
+        <>
+          {' '}
+          <FontAwesomeIcon
+            size="1x"
+            style={{ color: 'green' }}
+            icon={faCheckCircle}
+          />
+        </>
+      )}
+      {storage.words[data.id] && storage.words[data.id].length > 0 && (
+        <>
+          {' '}
+          <FontAwesomeIcon
+            size="1x"
+            style={{ color: '#ffd500' }}
+            icon={faSpinner}
+          />
+        </>
+      )}
+    </StyledP>
+  )
+}
 
 // Lektion 1 --------------------------------------------------------------------------------------
 
@@ -433,45 +475,9 @@ function Lektion1({ setActive }) {
         Lasst uns Parkette anschauen und über Flächeninhalt nachdenken.
       </StyledP>
       <StyledH3>1.1) Was gehört nicht dazu?</StyledH3>
-      <StyledP>
-        <Button
-          onClick={() => {
-            setActive(l1_1)
-          }}
-        >
-          <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Start
-        </Button>
-        {storage.done['l1_1'] && (
-          <>
-            {' '}
-            <FontAwesomeIcon
-              size="1x"
-              style={{ color: 'green' }}
-              icon={faCheckCircle}
-            />
-          </>
-        )}
-      </StyledP>
+      <Task data={l1_1} />
       <StyledH3>1.2) Mehr Rot, Grün oder Blau?</StyledH3>
-      <StyledP>
-        <Button
-          onClick={() => {
-            setActive(l1_2)
-          }}
-        >
-          <FontAwesomeIcon size="1x" icon={faPlayCircle} /> Start
-        </Button>
-        {storage.done['l1_2'] && (
-          <>
-            {' '}
-            <FontAwesomeIcon
-              size="1x"
-              style={{ color: 'green' }}
-              icon={faCheckCircle}
-            />
-          </>
-        )}
-      </StyledP>
+      <Task data={l1_2} />
       {renderArticle([
         {
           type: 'spoiler-container',
@@ -531,21 +537,18 @@ function Lektion1({ setActive }) {
       ] as any)}
       <StyledH3>Zusammenfassung</StyledH3>
       <StyledP>
-        In dieser Lektion lernten wir <em>Parkette</em> kennen. Ein Parkett
-        bezeichnet eine Überdeckung einer zweidimensionalen Ebene mit Kopien der
-        gleichen Figur oder Figuren, so dass es keine Lücken oder
-        Überschneidungen gibt.
+        In dieser Lektion sind uns mehrere <em>Parkette</em> begegnet. Ein
+        Parkett überdeckt die zweidimensionale Ebene mit Kopien einer Figur oder
+        mehrerer Figuren. Dabei gibt es weder Überschneidungen noch Lücken.
       </StyledP>
       <StyledP>
-        Dann verglichen wir Parkette und die darin enthaltenen Figuren. Wenn wir
-        darüber nachdenken, welche Muster und Formen mehr von der Ebene
-        bedecken, haben wir begonnen, über den <b>Flächeninhalt</b>{' '}
-        nachzudenken.
+        Dann haben wir verschiedene Parkette und die darin enthaltenen Figuren
+        verglichen. Wir haben untersucht, welche Figuren und Muster mehr Fläche
+        bedecken und damit begonnen, über den <b>Flächeninhalt</b> nachzudenken.
       </StyledP>
       <StyledP>
-        Wir werden diese Arbeit fortsetzen und lernen, wie wir mathematische
-        Werkzeuge strategisch einsetzen können, um uns bei der Mathematik zu
-        unterstützen.
+        Diese Gedanken werden wir fortsetzen. Wir werden mathematische Werkzeuge
+        kennenlernen und sehen, wie sie uns helfen, Mathematik zu betreiben.
       </StyledP>
       <StyledH3>1.3) Was ist Flächeninhalt?</StyledH3>
       <StyledP>
