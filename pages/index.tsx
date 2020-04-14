@@ -1,194 +1,487 @@
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowCircleRight } from '@fortawesome/free-solid-svg-icons'
-import Head from 'next/head'
-
-import Header from '../src/components/navigation/Header'
-import LandingSubjects from '../src/components/landing/LandingSubjects'
-import LandingAbout from '../src/components/landing/LandingAbout'
-import Footer from '../src/components/navigation/Footer'
-
 import {
-  makeDefaultButton,
-  makeResponsivePadding
-} from '../src/helper/csshelper'
+  faPlayCircle,
+  faExpand,
+  faCheckCircle,
+  faSpinner,
+  faUndo
+} from '@fortawesome/free-solid-svg-icons'
+import React from 'react'
+import ReasoningExercise from '../src/components/content/ReasoningExercise'
+import StyledH1 from '../src/components/tags/StyledH1'
+import StyledH2 from '../src/components/tags/StyledH2'
+import StyledP from '../src/components/tags/StyledP'
+import HSpace from '../src/components/content/HSpace'
+import StyledH3 from '../src/components/tags/StyledH3'
+import { renderArticle } from '../src/schema/articleRenderer'
+import StyledA from '../src/components/tags/StyledA'
+import SpecialCSS from '../src/components/content/SpecialCSS'
 
-import PrinciplesSVG from '../public/img/landing_principles_graphic.svg'
-import DonateSVG from '../public/img/footer_donate.svg'
-import ParticipateSVG from '../public/img/footer_participate.svg'
+let storage = {
+  done: {},
+  words: {},
+  page: 0
+}
 
-export default function Landing() {
+const localStorageItemKey = 'area_data'
+
+function setDone(key) {
+  storage.done[key] = true
+  localStorage.setItem(localStorageItemKey, JSON.stringify(storage))
+}
+
+function setWords(key, words) {
+  storage.words[key] = words
+  localStorage.setItem(localStorageItemKey, JSON.stringify(storage))
+}
+
+function setPage(index) {
+  storage.page = index
+  localStorage.setItem(localStorageItemKey, JSON.stringify(storage))
+}
+
+const LessonContext = React.createContext<any>({})
+
+export default function Reasoning() {
+  const [active, setActive] = React.useState(undefined)
+  const [lesson, setLesson] = React.useState(0)
+  const [isLoaded, setLoaded] = React.useState(false)
+  const [v, setV] = React.useState(0)
+
+  React.useEffect(() => {
+    const data = window.localStorage.getItem(localStorageItemKey)
+    if (data) {
+      storage = JSON.parse(data)
+      setLesson(storage.page || 0)
+    }
+    setLoaded(true)
+  }, [])
+
+  if (!isLoaded) return null
+
   return (
     <>
-      <Head>
-        <title>Serlo - Die freie Lernplattform</title>
-      </Head>
-      <Header />
-      <SubjectsSection>
-        <LandingSubjects />
-      </SubjectsSection>
+      <Container>
+        <MaxWidth>
+          <StyledH1>Lektion 1: Parkette</StyledH1>
 
-      <AboutSection>
-        <LandingAbout />
-      </AboutSection>
-
-      <Section>
-        <StyledH2>Serlo.org ist die Wikipedia fürs Lernen</StyledH2>
-        <IconStyle>
-          <ParticipateSVG />
-        </IconStyle>
-        <Col>
-          <p>
-            Wir suchen LehrerInnen mit Begeisterung für ihr Fach. Werden Sie
-            AutorIn auf serlo.org, erstellen Sie <b>neue Inhalte</b> und helfen
-            Sie uns, die <b>Qualität</b> der Lernplattform zu sichern.
+          <SpecialCSS>
+            <LessonContext.Provider value={{ setActive }}>
+              <Lektion1 setActive={setActive} />
+            </LessonContext.Provider>
+          </SpecialCSS>
+          <HSpace amount={60} />
+          <StyledP
+            style={{
+              textAlign: 'right'
+            }}
+          ></StyledP>
+          <p style={{ margin: '16px' }}>
+            <small>
+              Lade die Originalversion kostenlos herunter:{' '}
+              <StyledA href="https://openupresources.org/">
+                openupresources.org
+              </StyledA>
+            </small>
           </p>
-          <Button href="/community">
-            Zur Startseite für AutorInnen{' '}
-            <FontAwesomeIcon icon={faArrowCircleRight} size="1x" />
-          </Button>
-        </Col>
-        <Col>
-          <p>
-            Wir suchen neue hauptamtliche und ehrenamtliche Teammitglieder für
-            die Bereiche <b>Softwareentwicklung</b>, <b>Redaktion</b> und{' '}
-            <b>NGO-Management</b>.
-          </p>
-          <Button href="/jobs">
-            Jobs und Engagement{' '}
-            <FontAwesomeIcon icon={faArrowCircleRight} size="1x" />
-          </Button>
-        </Col>
-      </Section>
-
-      <PrinciplesSection>
-        <PrinciplesSVG />
-      </PrinciplesSection>
-
-      <Section>
-        <StyledH2>Werden Sie Teil unserer Bewegung für freie Bildung</StyledH2>
-        <IconStyle>
-          <DonateSVG />
-        </IconStyle>
-        <Col>
-          <p>
-            Bildung gehört uns allen! Werden Sie Mitglied in unserer
-            Organisation Serlo Education e.V. und so zu MitherausgeberIn der
-            freien Lernplattform.
-          </p>
-          <Button href="/beitreten">
-            Mitglied werden{' '}
-            <FontAwesomeIcon icon={faArrowCircleRight} size="1x" />
-          </Button>
-        </Col>
-        <Col>
-          <p>
-            Softwareentwicklung und Lerninhalte erstellen kostet Geld. Wir
-            freuen uns sehr, wenn Sie Serlo mit einer Spende unterstützen.
-          </p>
-          <Button href="/spenden">
-            Spenden <FontAwesomeIcon icon={faArrowCircleRight} size="1x" />
-          </Button>
-        </Col>
-      </Section>
-      <Footer />
+        </MaxWidth>
+      </Container>
+      {active && (
+        <Overlay>
+          <ReasoningExercise
+            data={active}
+            words={storage.words[active.id]}
+            onExit={(state, payload) => {
+              if (state === 'success') {
+                setDone(active.id)
+              } else if (state === 'abort') {
+                setWords(active.id, payload)
+              }
+              setActive(undefined)
+            }}
+          />
+        </Overlay>
+      )}
     </>
   )
 }
 
-const SubjectsSection = styled.section``
-
-const Section = styled.section`
-  margin-top: 60px;
-  margin-bottom: 60px;
-  ${makeResponsivePadding}
-
-  @media (min-width: ${props => props.theme.breakpoints.sm}) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+function launchIntoFullscreen(element) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen()
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen()
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen()
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen()
   }
+}
 
-  @media (min-width: ${props => props.theme.breakpoints.lg}) {
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: white;
 `
 
-const Col = styled.div`
-  margin-top: 40px;
-
-  @media (min-width: ${props => props.theme.breakpoints.sm}) {
-    margin-top: 0;
-    margin-right: 30px;
-    flex: 1;
-
-    & > p {
-      min-height: 80px;
-    }
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-
-  @media (min-width: ${props => props.theme.breakpoints.lg}) {
-    margin-right: 50px;
-  }
-`
-
-const AboutSection = styled.section`
-  margin-top: 50px;
+const Container = styled.div`
   display: flex;
-  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: scroll;
+  position: relative;
+`
 
-  @media (min-width: ${props => props.theme.breakpoints.sm}) {
-    flex-direction: row;
+const MaxWidth = styled.div`
+  max-width: 700px;
+  width: 100%;
+  padding-top: 50px;
+  @media (max-width: 550px) {
+    padding-top: 20px;
   }
 `
 
-const StyledH2 = styled.h2`
-  font-size: 1.66rem;
+const Button = styled.span`
+  border-radius: 0.75rem;
+  font-size: 1.125rem;
+  border: 1px solid ${props => props.theme.colors.brand};
+  cursor: pointer;
+  padding: 6px 11px;
+  user-select: none;
   color: ${props => props.theme.colors.brand};
-  border: 0;
-  @media (min-width: ${props => props.theme.breakpoints.sm}) {
-    width: 100%;
+  &:active,
+  &:hover {
+    background-color: ${props => props.theme.colors.brand};
+    color: white;
   }
+  transition: all 0.6s;
+  display: inline-block;
+  margin-bottom: 5px;
 `
 
-const Button = styled.a`
-  ${makeDefaultButton}
-  margin-left: -3px;
-  font-weight: bold;
-  padding-top: 3px;
-  padding-top: 3px;
-  background-color: ${props => props.theme.colors.lightBlueBackground};
-`
-
-const PrinciplesSection = styled.section`
-  background-color: ${props => props.theme.colors.brand};
+const LessonButton = styled(Button)<{ active: boolean }>`
+  margin-right: 10px;
+  min-width: 20px;
   text-align: center;
-  ${makeResponsivePadding}
-  padding-top: 70px;
-  padding-bottom: 70px;
-
-  & > svg {
-    height: 450px;
-    width: 100%;
-    font-family: inherit;
-  }
+  ${props =>
+    props.active
+      ? `background-color: ${props.theme.colors.brand};color: white;`
+      : ''}
 `
 
-const IconStyle = styled.div`
-  & > path,
-  & .st0 {
-    fill: ${props => props.theme.colors.brandGreen};
-  }
-  width: 100px;
-  margin-right: 30px;
-  @media (min-width: ${props => props.theme.breakpoints.lg}) {
-    margin-right: 50px;
-    width: 120px;
-  }
-`
+function Task({ data, text = 'Start' }) {
+  const { setActive } = React.useContext(LessonContext)
+  return (
+    <StyledP>
+      <Button onClick={() => setActive(data)}>
+        <FontAwesomeIcon size="1x" icon={faPlayCircle} /> {text}
+      </Button>
+      {storage.done[data.id] && (
+        <>
+          {' '}
+          <FontAwesomeIcon
+            size="1x"
+            style={{ color: 'green' }}
+            icon={faCheckCircle}
+          />
+        </>
+      )}
+      {storage.words[data.id] && storage.words[data.id].length > 0 && (
+        <>
+          {' '}
+          <FontAwesomeIcon
+            size="1x"
+            style={{ color: '#ffd500' }}
+            icon={faSpinner}
+          />
+        </>
+      )}
+    </StyledP>
+  )
+}
+
+// Lektion 1 --------------------------------------------------------------------------------------
+
+const l1_1 = {
+  id: 'l1_1',
+  statement: [
+    {
+      type: 'p',
+      children: [{ text: 'Welches Muster gehört nicht dazu?' }]
+    },
+    {
+      type: 'img',
+      src: '/openup/6.1.A1.Image.2-4.png',
+      maxWidth: 400,
+      children: [{ text: '' }]
+    }
+  ],
+  answers: [
+    {
+      text: [
+        'Muster A. Es enthält nur blau.',
+        'Muster A. Es enthält kein gelb.',
+        'Muster B. Es enthält nur gelb.',
+        'Muster B. Es enthält kein blau.',
+        'Muster C. Es enthält keine Fünfecke.',
+        'Muster C. Es enthält Achtecke.',
+        'Muster C. Die Figuren sind unterschiedlich groß.',
+        'Muster D. Es besitzt Lücken zwischen den Figuren.',
+        'Muster D. Es enthält weiße Flächen.',
+        'Muster D. Alle Figuren haben die gleiche Seitenlänge.'
+      ],
+      type: 'success'
+    },
+    {
+      text: ['Muster A.', 'Muster B.', 'Muster C.', 'Muster D.'],
+      type: 'hint',
+      message: 'Erkläre, wie du auf deine Antwort gekommen bist.'
+    },
+    {
+      text: ['Muster A. Es enthält kein blau.'],
+      type: 'fail',
+      message: 'Muster A enthält blau.'
+    },
+    {
+      text: ['Muster A. Es enthält nur gelb.'],
+      type: 'fail',
+      message: 'Muster A enthält kein gelb.'
+    },
+    {
+      text: [
+        'Muster A. Es enthält nur eine Farbe.',
+        'Muster A. Es enthält nur Fünfecke.',
+        'Muster A. Es enthält keine Vierecke.'
+      ],
+      type: 'fail',
+      message: 'Das gilt auch für Muster B.'
+    },
+    {
+      text: 'Muster B. Es enthält kein gelb.',
+      type: 'fail',
+      message: 'Muster B enthält gelb.'
+    },
+    {
+      text: 'Muster B. Es enthält nur blau.',
+      type: 'fail',
+      message: 'Muster B enthält kein blau.'
+    },
+    {
+      text: 'Muster B. Es enthält kein gelb.',
+      type: 'fail',
+      message: 'Muster B enthält gelb.'
+    },
+    {
+      text: [
+        'Muster B. Es enthält nur eine Farbe.',
+        'Muster B. Es enthält nur Fünfecke.',
+        'Muster B. Es enthält keine Vierecke.'
+      ],
+      type: 'fail',
+      message: 'Das gilt auch für Muster A.'
+    },
+    {
+      text: 'Muster C. Es enthält keine Sechsecke.',
+      type: 'fail',
+      message: 'Kein Muster enthält Sechsecke.'
+    },
+    {
+      text: 'Muster C. Es enthält Fünfecke.',
+      type: 'fail',
+      message: 'Muster C enthält keine Fünfecke.'
+    },
+    {
+      text: 'Muster C. Die Figuren sind ähnlich groß.',
+      type: 'fail',
+      message: 'Das Viereck ist viel kleiner als das Achteck.'
+    },
+    {
+      text: 'Muster D. Es enthält keine Lücken zwischen den Figuren.',
+      type: 'fail',
+      message:
+        'Drei Seiten des Vierecks in Muster D berühren keine andere Figur.'
+    },
+    {
+      text: [
+        'Muster D. Es enthält blaue Flächen.',
+        'Muster D. Es enthält gelbe Flächen.'
+      ],
+      type: 'fail',
+      message: 'Das gilt auch für andere Muster'
+    },
+    {
+      text: 'Muster D. Alle Figuren haben die gleiche Größe.',
+      type: 'fail',
+      message: 'Die Fünfecke sind größer als die Vierecke.'
+    }
+  ]
+}
+
+const l1_2 = {
+  id: 'l1_2',
+  statement: [
+    {
+      type: 'p',
+      children: [
+        {
+          text:
+            'Schaue dir das Muster an. Welche Figur bedeckt am meisten Fläche: blaue Rauten, rote Trapeze oder grüne Dreiecke? Begründe deine Antwort.'
+        }
+      ]
+    },
+    {
+      type: 'img',
+      src: '/openup/6.1.A1.Image.5.1b.png',
+      maxWidth: 400,
+      children: [{ text: '' }]
+    },
+    {
+      type: 'spoiler-container',
+      children: [
+        {
+          type: 'spoiler-title',
+          children: [{ text: 'Hinweis' }]
+        },
+        {
+          type: 'spoiler-body',
+          children: [
+            {
+              type: 'img',
+              src: '/openup/6.1.A1.Image.5.1b_hint.png',
+              maxWidth: 400,
+              children: [{ text: '' }]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  answers: [
+    {
+      text: [
+        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster enthält_insgesamt 56_Dreiecke, 32_Rauten und 24_Trapeze. Jedes_Trapez bedeckt so_viel_Fläche wie 3_Dreiecke. Die 24_Trapeze bedecken so_viel_Fläche wie 72_Dreiecke. Jede_Raute lässt_sich_in 2_Dreiecke zerlegen. Damit bedecken 32_Rauten so_viel_Fläche wie 64_Dreiecke. Das_ist weniger als die_Trapeze bedecken.',
+        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 8_Sechsecke. Jedes_Achteck enthält 3_Trapeze, 4_Rauten und 7_Dreiecke. Jedes_Trapez bedeckt so_viel_Fläche wie 3_Dreiecke. Die 3_Trapeze bedecken so_viel_Fläche wie 9_Dreiecke. Jede_Raute lässt_sich_in 2_Dreiecke zerlegen. Damit bedecken 4_Rauten so_viel_Fläche wie 8_Dreiecke. Das_ist weniger als die_Trapeze bedecken.'
+      ],
+      type: 'success'
+    },
+    {
+      text: 'Am_meisten_Fläche bedecken rote_Trapeze. Das_sieht_man.',
+      type: 'hint',
+      message: 'Kannst du deine Aussage begründen?'
+    },
+    {
+      text: 'Am_meisten_Fläche bedecken rote_Trapeze.',
+      type: 'hint',
+      message: 'Das ist korrekt. Begründe nun deine Antwort.'
+    },
+    {
+      text: 'Am_meisten_Fläche bedecken grüne_Dreiecke.',
+      type: 'hint',
+      message: 'Kannst du diese Aussage begründen?'
+    },
+    {
+      text:
+        'Am_meisten_Fläche bedecken grüne_Dreiecke. Das_Muster enthält mehr_Dreiecke als Rauten oder Trapeze.',
+      type: 'fail',
+      message:
+        'Die Anzahl der Figuren allein entscheidet nicht über die bedeckte Fläche. Prüfe nach: Bedecken zwei Dreiecke mehr Fläche als ein Trapez?'
+    },
+    {
+      text: 'Am_meisten_Fläche bedecken blaue_Rauten.',
+      type: 'fail',
+      message: 'Das ist leider nicht korrekt.'
+    },
+    {
+      text:
+        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 8_Achtecke.',
+      type: 'fail',
+      message: 'Das ist nicht korrekt. Zähle nochmal die Ecken nach.'
+    },
+    {
+      text:
+        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 10_Sechsecke.',
+      type: 'fail',
+      message:
+        'Das ist nicht korrekt. Zähle nochmal die Anzahl der Sechsecke nach.'
+    }
+  ]
+}
+
+/*
+
+,
+      {
+        text: '',
+        type: 'fail',
+        message: ''
+      }
+
+    */
+
+const l1_3 = {
+  id: 'l1_3',
+  statement: [
+    {
+      type: 'p',
+      children: [
+        {
+          text:
+            'Denke kurz nach und schreibe deine beste Definition für den Flächeninhalt.'
+        }
+      ]
+    }
+  ],
+  answers: []
+}
+
+function Lektion1({ setActive }) {
+  return (
+    <>
+      <StyledP>
+        Lasst uns Parkette anschauen und über Flächeninhalt nachdenken.
+      </StyledP>
+      <StyledH2>1.1) Was gehört nicht dazu?</StyledH2>
+      <Task data={l1_1} />
+      <StyledH2>1.2) Mehr Rot, Grün oder Blau?</StyledH2>
+      <Task data={l1_2} />
+      <StyledH2>1.3) Was ist Flächeninhalt?</StyledH2>
+      <Task data={l1_3} />
+    </>
+  )
+}
+
+// Lektion 2 --------------------------------------------------------------------------------------
+
+function Lektion2() {
+  return (
+    <>
+      <StyledH2>Lektion 2: ...</StyledH2>
+    </>
+  )
+}
+
+// Lektion 3 --------------------------------------------------------------------------------------
+
+function Lektion3() {
+  return (
+    <>
+      <StyledH2>Lektion 3: ...</StyledH2>
+    </>
+  )
+}
+
+// Lektion 4 --------------------------------------------------------------------------------------
+
+function Lektion4() {
+  return (
+    <>
+      <StyledH2>Lektion 4: ...</StyledH2>
+    </>
+  )
+}

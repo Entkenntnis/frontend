@@ -16,6 +16,10 @@ const StyledImg = styled.img<StyledImgProps>`
         margin-right: auto;
       `
       : ''}
+  /* this is such a dirty hack!!! */
+  @media (max-width: ${props => props.maxWidth}px) {
+    max-width: 100%;
+  }
 `
 
 export default StyledImg
