@@ -17,6 +17,7 @@ import StyledH3 from '../src/components/tags/StyledH3'
 import { renderArticle } from '../src/schema/articleRenderer'
 import StyledA from '../src/components/tags/StyledA'
 import SpecialCSS from '../src/components/content/SpecialCSS'
+import { theme } from '../src/theme'
 
 let storage = {
   done: {},
@@ -365,50 +366,74 @@ const l1_2 = {
   answers: [
     {
       text: [
-        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster enthält_insgesamt 56_Dreiecke, 32_Rauten und 24_Trapeze. Jedes_Trapez bedeckt so_viel_Fläche wie 3_Dreiecke. Die 24_Trapeze bedecken so_viel_Fläche wie 72_Dreiecke. Jede_Raute lässt_sich_in 2_Dreiecke zerlegen. Damit bedecken 32_Rauten so_viel_Fläche wie 64_Dreiecke. Das_ist weniger als die_Trapeze bedecken.',
-        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 8_Sechsecke. Jedes_Achteck enthält 3_Trapeze, 4_Rauten und 7_Dreiecke. Jedes_Trapez bedeckt so_viel_Fläche wie 3_Dreiecke. Die 3_Trapeze bedecken so_viel_Fläche wie 9_Dreiecke. Jede_Raute lässt_sich_in 2_Dreiecke zerlegen. Damit bedecken 4_Rauten so_viel_Fläche wie 8_Dreiecke. Das_ist weniger als die_Trapeze bedecken.'
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 32_Rauten. Diese bedecken insgesamt 64 Dreiecke. Es gibt 56 Dreiecke. Am meisten Fläche wird also von Trapezen bedeckt.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 4_Rauten. Diese bedecken insgesamt 8 Dreiecke. Das Sechseck enthält 7_Dreiecke. Am meisten Fläche wird also von Trapezen bedeckt.'
       ],
       type: 'success'
     },
     {
-      text: 'Am_meisten_Fläche bedecken rote_Trapeze. Das_sieht_man.',
-      type: 'hint',
-      message: 'Kannst du deine Aussage begründen?'
-    },
-    {
-      text: 'Am_meisten_Fläche bedecken rote_Trapeze.',
-      type: 'hint',
-      message: 'Das ist korrekt. Begründe nun deine Antwort.'
-    },
-    {
-      text: 'Am_meisten_Fläche bedecken grüne_Dreiecke.',
-      type: 'hint',
-      message: 'Kannst du diese Aussage begründen?'
-    },
-    {
       text:
-        'Am_meisten_Fläche bedecken grüne_Dreiecke. Das_Muster enthält mehr_Dreiecke als Rauten oder Trapeze.',
+        'Meine Strategie: Ich zähle die Anzahl der Figuren. Die Figur, die am meisten vorkommt, bedeckt die meiste Fläche.',
       type: 'fail',
       message:
         'Die Anzahl der Figuren allein entscheidet nicht über die bedeckte Fläche. Prüfe nach: Bedecken zwei Dreiecke mehr Fläche als ein Trapez?'
     },
     {
-      text: 'Am_meisten_Fläche bedecken blaue_Rauten.',
-      type: 'fail',
-      message: 'Das ist leider nicht korrekt.'
+      text: [
+        'Am meisten Fläche bedecken rote Trapeze.',
+        'Am meisten Fläche bedecken blaue Rauten.',
+        'Am meisten Fläche bedecken grüne Dreiecke.'
+      ],
+      type: 'hint',
+      message: 'Kannst du deine Antwort begründen?'
     },
     {
-      text:
-        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 8_Achtecke.',
+      text: [
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 2_Dreiecke,',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 4_Dreiecke,',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 20_Trapeze.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 22_Trapeze.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 3_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 4_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 34_Rauten.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 36_Rauten.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 32_Rauten. Diese bedecken insgesamt 64 Dreiecke. Es gibt 50_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 32_Rauten. Diese bedecken insgesamt 64 Dreiecke. Es gibt 62_Dreiecke.'
+      ],
       type: 'fail',
-      message: 'Das ist nicht korrekt. Zähle nochmal die Ecken nach.'
+      message: 'Zähle nochmal nach.'
     },
     {
-      text:
-        'Am_meisten_Fläche bedecken rote_Trapeze. Das_Muster ist_unterteilbar_in 10_Sechsecke.',
+      text: [
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 32_Rauten. Diese bedecken insgesamt 64 Dreiecke. Es gibt 56 Dreiecke. Am meisten Fläche wird also von Rauten bedeckt.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ein rotes Trapez bedeckt 3_Dreiecke. Es gibt 24_Trapeze. Diese bedecken insgesamt 72 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Es gibt 32_Rauten. Diese bedecken insgesamt 64 Dreiecke. Es gibt 56 Dreiecke. Am meisten Fläche wird also von Dreiecken bedeckt.'
+      ],
       type: 'fail',
-      message:
-        'Das ist nicht korrekt. Zähle nochmal die Anzahl der Sechsecke nach.'
+      message: 'Schaue dir nochmal die bisherigen Ergebnisse an.'
+    },
+    {
+      text: [
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 2_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 4_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 4_Trapeze.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 7_Trapeze.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 3_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 4_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 3_Rauten.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 7_Rauten.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 4_Rauten. Diese bedecken insgesamt 8 Dreiecke. Das Sechseck enthält 9_Dreiecke.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 4_Rauten. Diese bedecken insgesamt 8 Dreiecke. Das Sechseck enthält 8_Dreiecke.'
+      ],
+      type: 'fail',
+      message: 'Zähle nochmal nach.'
+    },
+    {
+      text: [
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 4_Rauten. Diese bedecken insgesamt 8 Dreiecke. Das Sechseck enthält 7_Dreiecke. Am meisten Fläche wird also von Rauten bedeckt.',
+        'Meine Strategie: Ich unterteile jede Figur in kleine Dreiecke und zähle die Dreiecke. Ich schaue mir nur das Sechseck an, weil es sich im Muster wiederholt. Ein rotes Trapez bedeckt 3_Dreiecke. Das Sechseck enthält 3_Trapeze. Diese bedecken insgesamt 9 Dreiecke. Eine blaue Raute bedeckt 2_Dreiecke. Das Sechseck enthält 4_Rauten. Diese bedecken insgesamt 8 Dreiecke. Das Sechseck enthält 7_Dreiecke. Am meisten Fläche wird also von Dreiecken bedeckt.'
+      ],
+      type: 'fail',
+      message: 'Schaue dir nochmal die bisherigen Ergebnisse an.'
     }
   ]
 }
@@ -437,7 +462,22 @@ const l1_3 = {
       ]
     }
   ],
-  answers: []
+  answers: [
+    {
+      text: [
+        'Der Flächeninhalt ist der Raum innerhalb einer zweidimensionalen Figur.',
+        'Der Flächeninhalt ist der Raum innerhalb einer Figur.',
+        'Der Flächeninhalt ist die Anzahl an Einheitsquadraten innerhalb einer Figur.',
+        'Der Flächeninhalt ist die Anzahl an Qudraten innerhalb einer Figur.',
+        'Der Flächeninhalt ist die Breite mal die Höhe.',
+        'Der Flächeninhalt zeigt, wie groß eine Figur ist.',
+        'Der Flächeninhalt zeigt, wie viel Platz innerhalb einer Figur ist.',
+        'Der Flächeninhalt gibt an, wie viele Quadrate der gleichen Größe in diese Figur passen.',
+        'Der Flächeninhalt gibt an, wie viele Einheitsquadrate in diese Figur passen.'
+      ],
+      type: 'success'
+    }
+  ]
 }
 
 function Lektion1({ setActive }) {
@@ -448,10 +488,24 @@ function Lektion1({ setActive }) {
       </StyledP>
       <StyledH2>1.1) Was gehört nicht dazu?</StyledH2>
       <Task data={l1_1} />
+      {storage.done[l1_1.id] && (
+        <StyledP>
+          Bonusauftrag: Finde für jedes Muster einen Grund, warum es nicht
+          dazugehört.
+        </StyledP>
+      )}
       <StyledH2>1.2) Mehr Rot, Grün oder Blau?</StyledH2>
       <Task data={l1_2} />
       <StyledH2>1.3) Was ist Flächeninhalt?</StyledH2>
       <Task data={l1_3} />
+      {storage.done[l1_1.id] && storage.done[l1_2.id] && storage.done[l1_3.id] && (
+        <>
+          <HSpace amount={50} />
+          <StyledP style={{ color: theme.colors.orange }}>
+            <strong>Vielen Dank, dass du die Demo ausprobiert hast!</strong>
+          </StyledP>
+        </>
+      )}
     </>
   )
 }
