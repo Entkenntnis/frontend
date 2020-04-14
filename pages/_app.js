@@ -14,8 +14,17 @@ import { theme } from '../src/theme'
 class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props
+
+    console.log('render _app')
     return (
       <ThemeProvider theme={theme}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            ga("send", "pageview");
+            `
+          }}
+        />
         <Component {...pageProps} />
       </ThemeProvider>
     )
