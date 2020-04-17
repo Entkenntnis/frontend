@@ -63,6 +63,22 @@ export default function Reasoning() {
 
   return (
     <>
+      {active && (
+        <Overlay>
+          <ReasoningExercise
+            data={active}
+            words={storage.words[active.id]}
+            onExit={(state, payload) => {
+              if (state === 'success') {
+                setDone(active.id)
+              } else if (state === 'abort') {
+                setWords(active.id, payload)
+              }
+              setActive(undefined)
+            }}
+          />
+        </Overlay>
+      )}
       <Container>
         <MaxWidth>
           <StyledH1>Lektion 1: Parkette</StyledH1>
@@ -88,22 +104,6 @@ export default function Reasoning() {
           </p>
         </MaxWidth>
       </Container>
-      {active && (
-        <Overlay>
-          <ReasoningExercise
-            data={active}
-            words={storage.words[active.id]}
-            onExit={(state, payload) => {
-              if (state === 'success') {
-                setDone(active.id)
-              } else if (state === 'abort') {
-                setWords(active.id, payload)
-              }
-              setActive(undefined)
-            }}
-          />
-        </Overlay>
-      )}
     </>
   )
 }
@@ -122,22 +122,14 @@ function launchIntoFullscreen(element) {
 
 const Overlay = styled.div`
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
   background-color: white;
 `
 
-const Container = styled.div`
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  justify-content: center;
-  align-items: flex-start;
-  overflow-y: scroll;
-  position: relative;
-`
+const Container = styled.div``
 
 const MaxWidth = styled.div`
   max-width: 700px;

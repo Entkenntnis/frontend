@@ -17,7 +17,7 @@ const StyledImg = styled.img<StyledImgProps>`
       `
       : ''}
   /* this is such a dirty hack!!! */
-  @media (max-width: ${props => props.maxWidth}px) {
+  @media (max-width: ${props => props.maxWidth + 40}px) {
     max-width: 100%;
   }
 `
