@@ -18,6 +18,8 @@ import DonateSVG from '../public/_assets/img/footer_donate.svg'
 import ParticipateSVG from '../public/_assets/img/footer_participate.svg'
 import CookieBar from '../src/components/content/CookieBar'
 
+console.log(process.env)
+
 export default function Landing() {
   return (
     <>
